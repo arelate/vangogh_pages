@@ -11,6 +11,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"runtime"
 	"strconv"
 )
 
@@ -50,13 +51,13 @@ func GetAllPages(
 	if err != nil {
 		return err
 	}
-	var page gog_types.Page
+	var page gog_types.TotalPages
 	if err = json.NewDecoder(readCloser).Decode(&page); err != nil {
 		return err
 	}
 	totalPages := page.TotalPages
 
-	concurrentPages = 10
+	concurrentPages = runtime.NumCPU()
 	return getPages(httpClient, valueSet, 1, totalPages, concurrentPages, pt, mt, pageReadClosers, errors)
 }
 
