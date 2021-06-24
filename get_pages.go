@@ -78,7 +78,7 @@ func getPages(
 			if page > totalPages {
 				break
 			}
-			fmt.Printf("get %s (%s) page %d\n", pt, mt, page)
+			fmt.Printf("getting %s (%s) page %d\n", pt, mt, page)
 			go getPage(httpClient, strconv.Itoa(page), pt, mt, pageReadClosers, errors)
 		}
 		concurrentPages = 0
