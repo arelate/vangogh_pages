@@ -58,7 +58,13 @@ func GetAllPages(
 	totalPages := page.TotalPages
 
 	concurrentPages = runtime.NumCPU()
-	return getPages(httpClient, valueSet, 1, totalPages, concurrentPages, pt, mt, pageReadClosers, errors)
+	if err := getPages(httpClient, valueSet, 1, totalPages, concurrentPages, pt, mt, pageReadClosers, errors); err != nil {
+		return err
+	}
+
+	fmt.Println("done")
+
+	return nil
 }
 
 func getPages(
@@ -78,7 +84,12 @@ func getPages(
 			if page > totalPages {
 				break
 			}
-			fmt.Printf("getting %s (%s) page %d\n", pt, mt, page)
+			msg := fmt.Sprintf("\rgetting %s (%s) page %d", pt, mt, page)
+			if totalPages > 1 {
+				msg += fmt.Sprintf("/%d", totalPages)
+			}
+			msg += "..."
+			fmt.Print(msg)
 			go getPage(httpClient, strconv.Itoa(page), pt, mt, pageReadClosers, errors)
 		}
 		concurrentPages = 0
@@ -97,6 +108,7 @@ func getPages(
 			concurrentPages++
 		}
 	}
+
 	return nil
 }
 
